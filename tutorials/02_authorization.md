@@ -70,7 +70,7 @@ We are less likely to accidentally violate the security goals if we deny by
 default.
 So we will go with the whitelist approach.
 
-_Beware that most online resources with use the blacklist approach._
+_Beware that most online resources will use the blacklist approach._
 
 We need to tell ASP.NET framework to globally require that users are
 authenticated to access any endpoints.
