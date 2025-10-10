@@ -147,7 +147,7 @@ See if you can read a blog post without authentication by going to
 
 ### Role-based authorization
 
-It is often a requirement in systems that access to resources are restricted
+It is often a requirement in systems that the access to resources is restricted
 based on role.
 
 The blog application has multiple roles.
