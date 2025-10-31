@@ -7,6 +7,8 @@ using DataAccess.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using Microsoft.AspNetCore.Identity;
+using Api.Security;
 
 namespace Api;
 
@@ -41,6 +43,8 @@ public class Program
         );
         builder.Services.AddScoped<DbSeeder>();
 
+
+
         // Repositories
         builder.Services.AddScoped<IRepository<User>, UserRepository>();
         builder.Services.AddScoped<IRepository<Post>, PostRepository>();
@@ -50,9 +54,12 @@ public class Program
         builder.Services.AddScoped<IBlogService, BlogService>();
         builder.Services.AddScoped<IDraftService, DraftService>();
 
+        // Security
+        builder.Services.AddScoped<IPasswordHasher<User>, BcryptPasswordHasher>();
+
         builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-        builder.Services.AddOpenApi();
+        // builder.Services.AddOpenApi();
         builder.Services.AddOpenApiDocument(conf =>
         {
             conf.DocumentProcessors.Add(new TypeMapDocumentProcessor<ProblemDetails>());
@@ -80,7 +87,7 @@ public class Program
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi();
+            // app.MapOpenApi();
         }
         // app.UseHttpsRedirection();
         app.UseExceptionHandler();
