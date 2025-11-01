@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Tests.Helpers;
 using TUnit.Assertions;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace Tests.Security;
@@ -73,4 +74,36 @@ public class AuthServiceTest
             .That(() => sut.Authenticate(new LoginRequest("user1@example.com", "invalid")))
             .Throws<AuthenticationError>();
     }
+
+    [Test]
+public async Task Register_Success()
+{
+    var request = new RegisterRequest(
+        Email: "newuser@example.com",
+        UserName: "NewUser",
+        Password: "newpassword",
+        Name: "New User"
+    );
+
+    var result = await sut.Register(request);
+
+    await Assert.That(result.UserName).IsEqualTo("NewUser");
+    await Assert.That(userRepository.Query().Count()).IsEqualTo(3);
+}
+
+[Test]
+public async Task Register_EmailAlreadyExists()
+{
+    var request = new RegisterRequest(
+        Email: "user1@example.com",
+        UserName: "Duplicate",
+        Password: "whatever",
+        Name: "Duplicate"
+    );
+
+    await Assert.That(async () => await sut.Register(request))
+    .Throws<ValidationException>();
+
+
+}
 }
