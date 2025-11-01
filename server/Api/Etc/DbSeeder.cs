@@ -6,7 +6,7 @@ namespace Api.Etc;
 
 public class DbSeeder(
     AppDbContext context
-//, IPasswordHasher<User> hasher
+    , IPasswordHasher<User> hasher
 )
 {
     public async Task SetupAsync(String defaultPassword)
@@ -91,7 +91,7 @@ print('Hello World!')
                     Email = user.email,
                     EmailConfirmed = true,
                     Role = user.role,
-                    // PasswordHash = hasher.HashPassword(null, defaultPassword),
+                    PasswordHash = hasher.HashPassword(null, defaultPassword),
                 }
             );
         }
