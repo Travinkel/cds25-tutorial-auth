@@ -16,8 +16,8 @@ public partial class User
 
     public bool EmailConfirmed { get; set; } = true;
 
-    // [JsonIgnore]
-    // public string PasswordHash { get; set; } = null!;
+    [JsonIgnore]
+    public string PasswordHash { get; set; } = null!;
 
     public string Role { get; set; } = null!;
 }
