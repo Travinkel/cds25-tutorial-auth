@@ -16,6 +16,9 @@ public partial class Comment
     public string Content { get; set; } = null!;
 
     public string AuthorId { get; set; } = null!;
+
+    [ForeignKey("AuthorId")]
+    [InverseProperty("Comments")]
     public User? Author { get; set; }
 
     public long PostId { get; set; }

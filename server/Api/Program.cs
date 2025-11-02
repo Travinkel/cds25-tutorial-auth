@@ -9,6 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Api.Security;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
+using NSwag.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api;
 
@@ -43,7 +47,8 @@ public class Program
         );
         builder.Services.AddScoped<DbSeeder>();
 
-
+        // Security - JWT
+        builder.Services.AddScoped<ITokenService, JwtService>();
 
         // Repositories
         builder.Services.AddScoped<IRepository<User>, UserRepository>();
@@ -53,6 +58,7 @@ public class Program
         // Services
         builder.Services.AddScoped<IBlogService, BlogService>();
         builder.Services.AddScoped<IDraftService, DraftService>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
 
         // Security
         builder.Services.AddScoped<IPasswordHasher<User>, BcryptPasswordHasher>();
@@ -71,7 +77,45 @@ public class Program
         // Exception handling
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
         builder.Services.AddProblemDetails();
+
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
+        builder.Services
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = JwtService.ValidationParameters(builder.Configuration);
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = ctx =>
+                    {
+                        Console.WriteLine($"Auth failed: {ctx.Exception.Message}");
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = ctx =>
+                    {
+                        Console.WriteLine("Token validated successfully");
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+
+        builder.Services.AddAuthorization(options =>
+    {
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+    });
+
+
     }
+
+
 
     public static void SetupDatabase(WebApplication app, string defaultPassword)
     {
@@ -83,24 +127,28 @@ public class Program
     }
 
     public static WebApplication ConfigureApp(WebApplication app)
+{
+    if (app.Environment.IsDevelopment())
     {
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
-        {
-            // app.MapOpenApi();
-        }
-        // app.UseHttpsRedirection();
-        app.UseExceptionHandler();
+        // Enable OpenAPI / Swagger for development
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
-        app.UseAuthorization();
+    // Exception handling
+    app.UseExceptionHandler();
 
-        app.MapControllers();
+    // Authentication & Authorization
+    app.UseAuthentication();
+    app.UseAuthorization();
 
-        app.GenerateApiClientsFromOpenApi("/../../client/src/models/generated-client.ts").Wait();
-        app.MapScalarApiReference();
+    // Map API Controllers
+    app.MapControllers();
 
-        app.Run();
+    // Generate client + expose Scalar UI
+    app.GenerateApiClientsFromOpenApi("/../../client/src/models/generated-client.ts").Wait();
+    app.MapScalarApiReference();
 
-        return app;
+    return app;
     }
 }

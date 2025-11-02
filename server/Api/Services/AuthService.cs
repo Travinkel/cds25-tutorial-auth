@@ -6,6 +6,9 @@ using DataAccess.Entities;
 using DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
+using Api.Security;
+using Api.Mappers;
 
 namespace Api.Services;
 
@@ -39,6 +42,16 @@ public class AuthService(
             Role: user.Role
         );
     }
+
+    public AuthUserInfo? GetUserInfo(ClaimsPrincipal principal)
+{
+    var userId = principal.GetUserId();
+    return _userRepository
+        .Query()
+        .Where(u => u.Id == userId)
+        .SingleOrDefault()
+        ?.ToDto();
+}
 
     public async Task<AuthUserInfo> Register(RegisterRequest request)
     {

@@ -8,10 +8,18 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7" />
-    <PackageReference Include="NSwag.AspNetCore" Version="14.4.0" />
-    <PackageReference Include="NSwag.CodeGeneration.TypeScript" Version="14.4.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.14.0" />
+    <PackageReference Include="NSwag.AspNetCore" Version="14.0.0" />
+    <PackageReference Include="NSwag.CodeGeneration.CSharp" Version="14.0.0" />
+    <PackageReference Include="NSwag.CodeGeneration.TypeScript" Version="14.0.0" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.6.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
   </ItemGroup>
 
   <ItemGroup>
